@@ -1,41 +1,46 @@
 package com.example.student.controller;
 
+import com.example.student.dto.task.request.TaskCreateRequest;
+import com.example.student.dto.task.response.TaskResponse;
 import com.example.student.entity.Task;
+import com.example.student.mapper.TaskMapper;
 import com.example.student.repository.TaskRepository;
+import com.example.student.service.TaskService;
+import lombok.AllArgsConstructor;
+import org.apache.catalina.loader.ResourceEntry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-//@RequestMapping("hello")
-//http://localhost:8080/createTask
+@RequestMapping("task")
+@AllArgsConstructor
 public class TaskController {
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
-    public TaskController(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
+    @GetMapping
+    public List<TaskResponse> getAll() {
+        return taskService.getAll().stream().map(taskMapper::toDto).toList();
     }
 
-
-    @GetMapping("getAllTask")
-    public List<Task> getAllTask() {
-        return taskRepository.findAll();
+    @GetMapping("/{id}")
+    public TaskResponse get(@PathVariable Long id) {
+        return taskMapper.toDto(taskService.get(id));
     }
 
-    @GetMapping("getOneTask/{taskNumber}")
-    public Task getTask(@PathVariable Long taskNumber) {
-        return taskRepository.findById(taskNumber).get();
+    @PostMapping
+    public TaskResponse create(@RequestBody TaskCreateRequest taskDto) {
+        return taskMapper.toDto(taskService.create(taskMapper.fromDto(taskDto)));
     }
 
-    @PostMapping("createTask")
-    public Task createTask(@RequestBody Task task) {
-        return taskRepository.save(task);
-    }
-
-    @DeleteMapping("deleteTask/{taskNumber}")
-    public String deleteTask(@PathVariable Long taskNumber) {
-        taskRepository.deleteById(taskNumber);
-        return "Task by:" + taskNumber + " has been removed";
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        taskService.delete(id);
     }
 }
 
