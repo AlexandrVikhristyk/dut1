@@ -3,42 +3,20 @@ package com.example.student.mapper;
 import com.example.student.dto.task.request.TaskCreateRequest;
 import com.example.student.dto.task.response.TaskResponse;
 import com.example.student.entity.Task;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
-import java.util.Objects;
+import java.time.LocalDate;
 
-@Component
-public class TaskMapper {
-    public Task fromDto(TaskCreateRequest dto) {
-        if (Objects.isNull(dto)) {
-            return null;
-        }
+@Mapper(imports = LocalDate.class)
+public interface TaskMapper {
 
-        Task task = new Task();
-        task.setTitle(dto.getTitle());
-        task.setDescription(dto.getDescription());
-        task.setDeadline(dto.getDeadline());
+    @Mappings({
+            @Mapping(target = "taskTitle", source = "title"),
+            @Mapping(target = "userId", source = "entity.user.id"),
+    })
+    TaskResponse toDto(Task entity);
 
-        return task;
-    }
-
-    public TaskResponse toDto(Task entity) {
-        if (Objects.isNull(entity)) {
-            return null;
-        }
-
-        TaskResponse dto = new TaskResponse();
-        dto.setId(entity.getId());
-
-        dto.setTitle(entity.getTitle());
-        dto.setDescription(entity.getDescription());
-        dto.setCreatedDate(entity.getCreatedDate());
-        dto.setDeadline(entity.getDeadline());
-
-        if (Objects.nonNull(entity.getUser())) {
-            dto.setUserId(entity.getUser().getId());
-        }
-
-        return dto;
-    }
+    Task fromDto(TaskCreateRequest dto);
 }

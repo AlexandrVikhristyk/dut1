@@ -16,6 +16,7 @@ public class User {
     private String email;
     private String firstName;
     private String lastName;
+    private String password;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
     private Set<Task> tasks;
