@@ -18,4 +18,8 @@ public class UserService {
     public User getByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found by email " + email));
     }
+
+    public Boolean existUserByEmail(String email) {
+        return userRepository.existsUserByEmail(email);
+    }
 }
